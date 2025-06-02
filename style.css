@@ -1,0 +1,161 @@
+/* style.css – Fitness Tracker App */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.app-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+header h1 {
+  text-align: center;
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.3em;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.progress-bar {
+  background-color: #e0e0e0;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 5px;
+  position: relative;
+}
+
+.progress-bar > div {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.bar-total-label {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  color: #000;
+}
+
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.calendar-day {
+  border: 1px solid #ccc;
+  padding: 5px;
+  background: #fff;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 0.85em;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calendar-day:hover {
+  background-color: #f0f0f0;
+}
+
+.date-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.emoji-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.summary-section {
+  font-size: 0.95em;
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.hidden {
+  display: none;
+}
+
+.close-button {
+  float: right;
+  font-size: 1.5em;
+  cursor: pointer;
+}
