@@ -8,7 +8,12 @@ const defaultGoals = {
 
 let goals = { ...defaultGoals };
 let activityData = JSON.parse(localStorage.getItem('activityData') || '{}');
-const todayStr = new Date().toISOString().split('T')[0];
+
+// ✅ FIXED: Use local date string instead of UTC (avoids early rollover)
+const today = new Date();
+const todayStr = today.getFullYear() + '-' +
+                 String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                 String(today.getDate()).padStart(2, '0');
 
 function saveGoals() {
   goals.pushups = parseInt(document.getElementById('goalPushups').value) || 0;
