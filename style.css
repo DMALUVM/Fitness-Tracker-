@@ -1,10 +1,41 @@
-/* style.css – Fitness Tracker App */
+/* style.css – Daily Fitness Tracker App */
+
+/* CSS Variables for Theming */
+:root {
+  --primary-color: #007bff; /* Button bg */
+  --primary-hover: #0056b3;
+  --progress-bg: #e0e0e0;
+  --progress-fill: linear-gradient(to right, #28a745, #198754); /* Green gradient for progress */
+  --bg-color: #f9f9f9;
+  --text-color: #333;
+  --border-color: #bbb; /* Higher contrast than #ccc */
+  --summary-bg: #f1f1f1;
+  --modal-bg: rgba(0, 0, 0, 0.5);
+  --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; /* Modern system fonts */
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1e1e1e;
+    --text-color: #ddd;
+    --border-color: #555;
+    --summary-bg: #2a2a2a;
+    --progress-bg: #444;
+    --modal-bg: rgba(0, 0, 0, 0.7);
+  }
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+}
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
+  font-family: var(--font-stack);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.5; /* Improved readability */
 }
 
 .app-container {
@@ -15,7 +46,7 @@ body {
 
 header h1 {
   text-align: center;
-  font-size: 1.8em;
+  font-size: clamp(1.5em, 5vw, 1.8em); /* Fluid font size */
   margin-bottom: 20px;
 }
 
@@ -26,13 +57,14 @@ section {
 h2 {
   margin-top: 0;
   font-size: 1.3em;
-  border-bottom: 2px solid #ccc;
+  border-bottom: 2px solid var(--border-color);
   padding-bottom: 5px;
 }
 
 label {
   display: block;
   margin: 10px 0 5px;
+  font-weight: 500; /* Slight bold for labels */
 }
 
 input[type="number"],
@@ -42,27 +74,41 @@ input[type="text"] {
   font-size: 1em;
   box-sizing: border-box;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+input:focus,
+button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px; /* Accessibility focus ring */
 }
 
 button {
   padding: 10px 20px;
   font-size: 1em;
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   margin-top: 10px;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-hover);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .progress-bar {
-  background-color: #e0e0e0;
+  background-color: var(--progress-bg);
   height: 20px;
   border-radius: 10px;
   overflow: hidden;
@@ -72,6 +118,7 @@ button:hover {
 
 .progress-bar > div {
   height: 100%;
+  background: var(--progress-fill); /* Added fill color */
   transition: width 0.3s ease;
 }
 
@@ -83,7 +130,8 @@ button:hover {
   display: flex;
   align-items: center;
   font-size: 0.9em;
-  color: #000;
+  color: var(--text-color);
+  z-index: 1; /* Ensure above fill */
 }
 
 #calendar {
@@ -94,9 +142,9 @@ button:hover {
 }
 
 .calendar-day {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   padding: 5px;
-  background: #fff;
+  background: #fff; /* Override for light/dark if needed */
   text-align: center;
   border-radius: 5px;
   font-size: 0.85em;
@@ -104,10 +152,16 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: background-color 0.2s ease;
 }
 
 .calendar-day:hover {
   background-color: #f0f0f0;
+}
+
+.calendar-day.current {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px var(--primary-color); /* Highlight current day */
 }
 
 .date-label {
@@ -123,7 +177,7 @@ button:hover {
 
 .summary-section {
   font-size: 0.95em;
-  background: #f1f1f1;
+  background: var(--summary-bg);
   padding: 10px;
   border-radius: 8px;
 }
@@ -134,20 +188,27 @@ button:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--modal-bg);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease; /* Fade in */
+}
+
+.modal:not(.hidden) {
+  opacity: 1;
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-color); /* Match theme */
   padding: 20px;
   border-radius: 10px;
   width: 90%;
   max-width: 400px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  position: relative; /* For close button */
 }
 
 .hidden {
@@ -155,7 +216,20 @@ button:hover {
 }
 
 .close-button {
-  float: right;
+  position: absolute;
+  top: 10px;
+  right: 10px;
   font-size: 1.5em;
   cursor: pointer;
+  color: var(--text-color);
+}
+
+/* Media Query for Responsiveness */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 10px;
+  }
+  button {
+    width: 100%; /* Full-width buttons on mobile */
+  }
 }
