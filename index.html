@@ -6,7 +6,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#ffffff" />
-  <title>Fitness Tracker</title>
+  <title>Daily Fitness Tracker</title>
+  <link rel="manifest" href="manifest.json" /> <!-- Add this for full PWA support; create manifest.json with icons -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -17,28 +18,28 @@
 
     <section class="goals-section">
       <h2>Set Your Daily Goals</h2>
-      <div class="goal-inputs">
-        <label>Push-ups: <input type="number" id="goalPushups" value="200" /></label>
-        <label>Pull-ups: <input type="number" id="goalPullups" value="20" /></label>
-        <label>Air Squats: <input type="number" id="goalSquats" value="200" /></label>
-      </div>
+      <form class="goal-inputs"> <!-- Wrapped in form for semantics -->
+        <label>Push-ups: <input type="number" id="goalPushups" value="200" min="0" aria-label="Daily push-ups goal" /></label>
+        <label>Pull-ups: <input type="number" id="goalPullups" value="20" min="0" aria-label="Daily pull-ups goal" /></label>
+        <label>Air Squats: <input type="number" id="goalSquats" value="200" min="0" aria-label="Daily air squats goal" /></label>
+      </form>
     </section>
 
     <section class="entry-section">
       <h2>Today's Activity</h2>
-      <div class="entry-inputs">
-        <label>Push-ups: <input type="number" id="pushups" /></label>
+      <form class="entry-inputs"> <!-- Wrapped in form for semantics and potential native validation -->
+        <label>Push-ups: <input type="number" id="pushups" min="0" aria-label="Push-ups completed today" /></label>
         <div class="progress-bar" id="progressPushups"><div></div></div>
 
-        <label>Pull-ups: <input type="number" id="pullups" /></label>
+        <label>Pull-ups: <input type="number" id="pullups" min="0" aria-label="Pull-ups completed today" /></label>
         <div class="progress-bar" id="progressPullups"><div></div></div>
 
-        <label>Air Squats: <input type="number" id="squats" /></label>
+        <label>Air Squats: <input type="number" id="squats" min="0" aria-label="Air squats completed today" /></label>
         <div class="progress-bar" id="progressSquats"><div></div></div>
 
-        <label>Dead Hang (mm:ss): <input type="text" id="deadHang" placeholder="1:30" /></label>
-        <button id="saveEntry">Save Entry</button>
-      </div>
+        <label>Dead Hang (mm:ss): <input type="text" id="deadHang" placeholder="1:30" pattern="\d+:\d{2}" title="Enter time in mm:ss format (e.g., 1:30)" aria-label="Dead hang time in mm:ss" /></label>
+        <button type="submit" id="saveEntry">Save Entry</button> <!-- Type submit for form compatibility -->
+      </form>
     </section>
 
     <section class="calendar-section">
@@ -53,15 +54,17 @@
   </div>
 
   <!-- Modal for editing past entries -->
-  <div id="editModal" class="modal hidden">
+  <div id="editModal" class="modal hidden" role="dialog" aria-modal="true"> <!-- Added ARIA for accessibility -->
     <div class="modal-content">
-      <span class="close-button" id="closeModal">&times;</span>
+      <span class="close-button" id="closeModal" aria-label="Close modal">×</span>
       <h3>Edit Entry for <span id="editDateLabel"></span></h3>
-      <label>Push-ups: <input type="number" id="editPushups" /></label>
-      <label>Pull-ups: <input type="number" id="editPullups" /></label>
-      <label>Air Squats: <input type="number" id="editSquats" /></label>
-      <label>Dead Hang (mm:ss): <input type="text" id="editDeadHang" /></label>
-      <button id="saveEdit">Save Changes</button>
+      <form> <!-- Wrapped in form -->
+        <label>Push-ups: <input type="number" id="editPushups" min="0" aria-label="Edit push-ups" /></label>
+        <label>Pull-ups: <input type="number" id="editPullups" min="0" aria-label="Edit pull-ups" /></label>
+        <label>Air Squats: <input type="number" id="editSquats" min="0" aria-label="Edit air squats" /></label>
+        <label>Dead Hang (mm:ss): <input type="text" id="editDeadHang" pattern="\d+:\d{2}" title="Enter time in mm:ss format (e.g., 1:30)" aria-label="Edit dead hang time" /></label>
+        <button type="submit" id="saveEdit">Save Changes</button>
+      </form>
     </div>
   </div>
 
