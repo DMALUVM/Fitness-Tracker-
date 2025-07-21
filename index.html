@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#ffffff" />
   <title>Daily Fitness Tracker</title>
-  <link rel="manifest" href="manifest.json" /> <!-- Create manifest.json for PWA; see below -->
+  <link rel="manifest" href="manifest.json" /> <!-- Create manifest.json for PWA; see notes -->
   <style>
     /* CSS – Daily Fitness Tracker App */
     :root {
@@ -139,6 +139,10 @@
       color: #fff;
       font-size: 0.8em;
       position: relative;
+    }
+
+    .progress-bar > div.bg-success {
+      background: var(--progress-fill); /* Explicit for success */
     }
 
     .progress-bar > div.bg-warning {
@@ -338,7 +342,7 @@
   </div>
 
   <script>
-    // script.js – Daily Fitness Tracker App
+    // script.js – Daily Fitness Tracker App (with fixes)
     const defaultGoals = {
       pushups: 200,
       pullups: 20,
@@ -454,7 +458,12 @@
     }
 
     function updateBarWithTotal(id, value, goal) {
-      const percent = Math.min((value / goal) * 100, 100) || 0;
+      let percent = 0;
+      if (goal > 0) {
+        percent = Math.min((value / goal) * 100, 100);
+      } else if (value > 0) {
+        percent = 100; // If goal=0 but value>0, treat as complete
+      }
       const barContainer = document.getElementById(id);
       const bar = barContainer.firstElementChild;
       bar.style.width = `${percent}%`;
@@ -569,7 +578,7 @@
           const indicators = [
             d.pushups >= goals.pushups ? '✅' : (d.pushups > 0 ? '⚠️' : '❌'),
             d.pullups >= goals.pullups ? '✅' : (d.pullups > 0 ? '⚠️' : '❌'),
-            d.squats >= goals.squats ?soci: '✅' : (d.squats > 0 ? '⚠️' : '❌')
+            d.squats >= goals.squats ? '✅' : (d.squats > 0 ? '⚠️' : '❌')  // Fixed typo here ('soci' -> ' '✅' )
           ].map(e => `<span title="Pushups/Pullups/Squats">${e}</span>`).join('');
           dayBox.innerHTML += `<div class="emoji-indicators">${indicators}</div>`;
           if (d.deadHang) dayBox.innerHTML += `<div title="Dead Hang">⏱ ${d.deadHang}</div>`;
@@ -609,11 +618,9 @@
         year: { pushups: 0, pullups: 0, squats: 0, deadHangMax: 0 },
         allTime: { pushups: 0, pullups: 0, squats: 0, deadHangMax: 0 }
       };
-      let streak = 0;
-      let checkDate = new Date(now);
-      checkDate.setHours(0,0,0,0);
 
-      for (const [dateStr, entry] of Object.entries(activityData).sort((a,b) => new Date(b) - new Date(a))) {
+      // Sum totals from existing entries
+      for (const [dateStr, entry] of Object.entries(activityData)) {
         const date = new Date(dateStr);
         const deadHangSecs = timeToSeconds(entry.deadHang);
 
@@ -621,15 +628,22 @@
         if (date >= startOfMonth) addToTotals(totals.month, entry, deadHangSecs);
         if (date >= startOfYear) addToTotals(totals.year, entry, deadHangSecs);
         addToTotals(totals.allTime, entry, deadHangSecs);
+      }
 
-        if (date.getTime() === checkDate.getTime()) {
-          if (entry.pushups >= goals.pushups && entry.pullups >= goals.pullups && entry.squats >= goals.squats) {
-            streak++;
-          } else {
-            break;
-          }
-          checkDate.setDate(checkDate.getDate() - 1);
+      // Fixed streak: loop day-by-day backward, break on missing or not met
+      let streak = 0;
+      let checkDate = new Date(now);
+      checkDate.setHours(0,0,0,0);
+      while (true) {
+        const dateStr = checkDate.toISOString().split('T')[0];
+        const entry = activityData[dateStr];
+        if (entry && entry.pushups >= goals.pushups && entry.pullups >= goals.pullups && entry.squats >= goals.squats) {
+          streak++;
+        } else {
+          break;
         }
+        checkDate.setDate(checkDate.getDate() - 1);
+        if (streak > 1000) break; // Safety to prevent infinite loop (unlikely)
       }
 
       const formatMaxHang = secs => secs > 0 ? secondsToTime(secs) : 'N/A';
@@ -691,7 +705,7 @@
       updateSummary();
 
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered:', reg));
+        navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered:', reg)).catch(err => console.error('SW registration failed:', err));
       }
     });
   </script>
